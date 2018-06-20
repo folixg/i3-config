@@ -31,40 +31,36 @@ fi
 # pause dunst notifications
 killall -SIGUSR1 dunst
 
-# if the tools for the fancy lock screen (scrot, convert) are not available
-# use a simple lock screen
-if [[ ! ($(which scrot) && $(which convert)) ]] ; then
+# if ffmpeg is not available use a simple lock screen
+if [[ ! $(which ffmpeg) ]] ; then
   if [ $suspend -eq 1 ] ; then
-    i3lock -c 2f343f -i ~/.i3/images/locked.png -t && systemctl suspend
+    i3lock -c 2f343f && systemctl suspend
   else
-    i3lock -n -c 2f343f -i ~/.i3/images/locked.png -t
+    i3lock -n -c 2f343f 
   fi
 else
-  # fancy lock screen https://git.fleshless.org/misc/tree/i3lock-extra
-  umask 0077 # temp files are only accessible for the user
-  tmpdir="/run/user/$UID/fancy_lock"
-  if ! [ -d $tmpdir ] ; then
-   mkdir "$tmpdir" || exit 1
-  fi
-  # take screenshot
-  scrot "$tmpdir/lockscreen.png"
-  ## pixelize and blur screenshot
-  convert "$tmpdir/lockscreen.png" "-scale" "10%" "-scale" "1000%" "-blur" \
-    "4x8" "$tmpdir/lockscreen.png" 
-  # overlay with lock symbol
+  # get current resolution from xrandr output that looks like
+  # Screen 0: minimum 8 x 8, current 3840 x 1200, maximum 32767 x 32767
+  resolution=$(xrandr | grep current)
+  resolution=($resolution)
+  resolution="${resolution[7]}x${resolution[9]%,*}"
+  image="/var/run/user/$UID/lockscreen.png"
+  # select overlay image depending on number of screens
   if [[ $(xrandr | grep -c -w connected) -eq 2 ]] ; then
-    # dual screen
-    convert "-gravity" "center" "-composite" "-matte" "$tmpdir/lockscreen.png" \
-      "$HOME/.i3/images/dualscreen_locked.png" "$tmpdir/lockscreen.png"
+    overlay="$HOME/.i3/images/dualscreen_locked.png"
   else
-    convert "-gravity" "center" "-composite" "-matte" "$tmpdir/lockscreen.png" \
-      "$HOME/.i3/images/locked.png" "$tmpdir/lockscreen.png"
-  fi 
+    overlay="$HOME/.i3/images/locked.png"
+  fi
+  # perform blur and overlay
+  ffmpeg -loglevel quiet -f x11grab -video_size 3840x1200 -y -i "$DISPLAY" \
+    -i "$overlay" -filter_complex \
+    "boxblur=4,overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2" -vframes 1 \
+    "$image"
   # perform lock
   if [ $suspend -eq 1 ] ; then
-    i3lock -i "$tmpdir/lockscreen.png" && systemctl suspend
+    i3lock -i "$image" && systemctl suspend
   else
-    i3lock -n -i "$tmpdir/lockscreen.png"
+    i3lock -n -i "$image"
   fi
 fi
 # resume music player if it was paused on lock (unless system was suspended)
