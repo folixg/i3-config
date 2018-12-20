@@ -100,17 +100,20 @@ bindsym $mod+Shift+m move scratchpad
 # Show the first scratchpad window
 bindsym $mod+m scratchpad show
 
+# Switch orientation of right monitor
+bindsym $mod+p exec --no-startup-id ~/.i3/scripts/switch_orientation.sh
+
 # workspace aliases
 set $workspace1 "1 "
 set $workspace2 "2 "
 set $workspace3 "3 "
-set $workspace4 "4 "
-set $workspace5 "5 "
+set $workspace4 "4 "
+set $workspace5 "5 "
 set $workspace6 "6 "
 set $workspace7 "7 "
-set $workspace8 "8 "
-set $workspace9 "9 "
-set $workspace10 "10 "
+set $workspace8 "8 "
+set $workspace9 "9 "
+set $workspace10 "10 "
 
 # switch to workspace
 bindsym $mod+1 workspace $workspace1
@@ -201,6 +204,8 @@ bindsym $mod+r mode "resize"
 # finds out, if available)
 bar {
         status_command ~/.i3/scripts/spotify-status.sh
+        output primary
+        tray_output none
         separator_symbol "┊" 
         strip_workspace_numbers yes
         font pango:$text-font, $icon-font $font-size
@@ -214,6 +219,25 @@ bar {
 		inactive_workspace $bar-bg-color  $bar-bg-color      $inactive-text-color
 		urgent_workspace   $bar-bg-color  $urgent-bg-color   $text-color
 }
+}
+
+bar {
+        output HDMI3
+        tray_output HDMI3
+        status_command i3status -c ~/.i3/i3status.conf
+        separator_symbol "┊" 
+        strip_workspace_numbers yes
+        font pango:$text-font, $icon-font $font-size
+	colors {
+		background $bar-bg-color
+                statusline $text-color
+	    	separator  $text-color
+		#                  border         background         text
+		focused_workspace  $bar-bg-color  $bar-bg-color      $text-color
+		active_workspace   $bar-bg-color  $bar-bg-color      $inactive-text-color
+		inactive_workspace $bar-bg-color  $bar-bg-color      $inactive-text-color
+		urgent_workspace   $bar-bg-color  $urgent-bg-color   $text-color
+                }
 }
 
 # window colors
@@ -242,8 +266,10 @@ bindsym --release Ctrl+Print exec --no-startup-id scrot -u '/tmp/%Y%m%d-%H%M%S_s
 # Autostart
 # load ~/.Xresources
 exec_always --no-startup-id xrdb ~/.Xresources
+# inital monitor setup
+exec --no-startup-id ~/.i3/scripts/switch_orientation.sh
 # wallpaper
-exec_always --no-startup-id feh --bg-scale ~/.i3/images/wallpaper.png
+exec_always --no-startup-id ~/.fehbg
 # dunst for notifications
 exec --no-startup-id dunst -config ~/.i3/dunstrc
 # background tasks

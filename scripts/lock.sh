@@ -47,12 +47,16 @@ else
   image="/var/run/user/$UID/lockscreen.png"
   # select overlay image depending on number of screens
   if [[ $(xrandr | grep -c -w connected) -eq 2 ]] ; then
-    overlay="$HOME/.i3/images/dualscreen_locked.png"
+    if [ "$resolution" == "3120x1920" ] ; then
+      overlay="$HOME/.i3/images/dualscreen_locked_1920x1200_1200x1920.png"
+    else
+      overlay="$HOME/.i3/images/dualscreen_locked_1920x1200_1920x1200.png"
+    fi
   else
     overlay="$HOME/.i3/images/locked.png"
   fi
   # perform blur and overlay
-  ffmpeg -loglevel quiet -f x11grab -video_size 3840x1200 -y -i "$DISPLAY" \
+  ffmpeg -f x11grab -video_size $resolution -y -i "$DISPLAY" \
     -i "$overlay" -filter_complex \
     "boxblur=4,overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2" -vframes 1 \
     "$image"
