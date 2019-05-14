@@ -160,6 +160,8 @@ for_window [class="i3-scratchpad"] border pixel 2, move window to scratchpad
 exec --no-startup-id xterm -class 'i3-scratchpad' -e vim -c 'set ft=markdown' \
 -c 'set noswapfile' /tmp/scratchpad
 
+for_window [title="Unlock Database - KeePassXC"] floating enable
+
 # reload the configuration file
 bindsym $mod+Shift+c reload
 
