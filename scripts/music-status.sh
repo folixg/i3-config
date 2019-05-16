@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
 
-SPOTIFY="org.mpris.MediaPlayer2.spotify"
 MEDIAPLAYER="/org/mpris/MediaPlayer2"
 GET_PROPERTIES="org.freedesktop.DBus.Properties.Get"
 PLAYER="org.mpris.MediaPlayer2.Player"
 
 # This function is taken from  https://gist.github.com/wandernauta/6800547
-function sp-metadata {
+function player-metadata {
   # Prints the currently playing track in a parseable format.
 
   dbus-send                                                                   \
   --print-reply                                  `# We need the reply.`       \
-  --dest=$SPOTIFY                                                             \
+  --dest="org.mpris.MediaPlayer2.$RUNNING"                                    \
   $MEDIAPLAYER                                                                \
   $GET_PROPERTIES                                                             \
   string:"$PLAYER" string:'Metadata'                                          \
@@ -28,32 +27,46 @@ function sp-metadata {
   | sed -E 's/\"/\\\"/g'                         `# Escape quotes for JSON.`
 }
 
+function player-status {
+  STATUS=$(dbus-send --print-reply --dest="org.mpris.MediaPlayer2.$RUNNING" \
+    "$MEDIAPLAYER" "$GET_PROPERTIES" string:"$PLAYER" string:'PlaybackStatus' \
+    2> /dev/null)
+  if [ "$STATUS" != "" ]; then
+    STATUS=${STATUS#*\"}
+    STATUS=${STATUS::-1}
+  fi
+} 
+
 i3status -c ~/.i3/i3status.conf | while :
 do
   read line
   if [ "$line" == '{"version":1}' ] || [ "$line" == "[" ] ; then
     echo "$line" || exit 1
-  else    
-    STATUS=$(dbus-send --print-reply --dest="$SPOTIFY" "$MEDIAPLAYER" \
-      "$GET_PROPERTIES" string:"$PLAYER" string:'PlaybackStatus' 2> /dev/null)
+  else   
+    # first check if spotify is running
+    RUNNING="spotify"
+    player-status
     if [ "$STATUS" == "" ] ; then
-      echo "$line" || exit 1    
-      continue
+      # then check for rhythmbox
+      RUNNING="rhythmbox"
+      player-status
+      if [ "$STATUS" == "" ] ; then
+        echo "$line" || exit 1    
+        continue
+      fi
     fi
-    STATUS=${STATUS#*\"}
-    STATUS=${STATUS::-1}
     if [ "$STATUS" == "Playing" ] || [ "$STATUS" == "Paused" ] ; then
       if [ "$STATUS" == "Playing" ] ; then
         ICON=""
       else
         ICON="" 
       fi
-      METADATA=$(sp-metadata)
+      METADATA=$(player-metadata)
       ARTIST=$(echo "$METADATA" | grep --color=never "artist")
       ARTIST=${ARTIST#*|}
       TITLE=$(echo "$METADATA" | grep --color=never "title")
       TITLE=${TITLE#*|}
-      echo ",[{\"name\":\"spotify\",\"full_text\":\"$ICON $ARTIST - $TITLE\"},${line#*[}" || exit 1
+      echo ",[{\"name\":\"music\",\"full_text\":\"$ICON $ARTIST - $TITLE\"},${line#*[}" || exit 1
     fi
   fi
 done
