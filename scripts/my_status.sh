@@ -8,6 +8,6 @@ do
   else   
     KBD=$(~/.i3/scripts/keyboard_layout.sh)
     MUSIC=$(~/.i3/scripts/music_status.sh)
-    echo "[$MUSIC,$KBD,${line#*[}," || exit 1
+    echo "[$MUSIC$KBD${line#*[}," || exit 1
   fi
 done

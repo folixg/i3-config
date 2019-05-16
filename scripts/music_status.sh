@@ -59,5 +59,5 @@ if [ "$STATUS" == "Playing" ] || [ "$STATUS" == "Paused" ] ; then
   ARTIST=${ARTIST#*|}
   TITLE=$(echo "$METADATA" | grep --color=never "title")
   TITLE=${TITLE#*|}
-  echo "{\"name\":\"music\",\"full_text\":\"$ICON $ARTIST - $TITLE\"}" || exit 1
+  echo "{\"name\":\"music\",\"full_text\":\"$ICON $ARTIST - $TITLE\"}," || exit 1
 fi

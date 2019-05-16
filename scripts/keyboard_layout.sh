@@ -7,5 +7,5 @@ if [ "$LED_STATUS" == "00001001" ] || [ "$LED_STATUS" == "00001003" ]; then
 else
   LAYOUT="DE"
 fi
-echo "{\"name\":\"keyboard\",\"full_text\":\" $LAYOUT\"}"
+echo "{\"name\":\"keyboard\",\"full_text\":\" $LAYOUT\"},"
 
