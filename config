@@ -100,9 +100,6 @@ bindsym $mod+Shift+m move scratchpad
 # Show the first scratchpad window
 bindsym $mod+m scratchpad show
 
-# Switch orientation of right monitor
-bindsym $mod+p exec --no-startup-id ~/.i3/scripts/switch_orientation.sh
-
 # workspace aliases
 set $workspace1 "1 "
 set $workspace2 "2 "
@@ -211,7 +208,7 @@ bindsym $mod+r mode "resize"
 bar {
         status_command ~/.i3/scripts/my_status.sh
         output primary
-        tray_output none
+        tray_output primary
         separator_symbol "┊" 
         strip_workspace_numbers yes
         font pango:$text-font, $icon-font $font-size
@@ -272,8 +269,6 @@ bindsym --release Ctrl+Print exec --no-startup-id scrot -u '/tmp/%Y%m%d-%H%M%S_s
 # Autostart
 # load ~/.Xresources
 exec_always --no-startup-id xrdb ~/.Xresources
-# inital monitor setup
-exec --no-startup-id ~/.i3/scripts/switch_orientation.sh
 # wallpaper
 exec_always --no-startup-id ~/.fehbg
 # dunst for notifications
