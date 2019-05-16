@@ -152,7 +152,7 @@ workspace $workspace9 output HDMI3
 workspace $workspace10 output HDMI3
 
 # floating terminal
-bindsym $mod+Shift+Return exec xterm -class floating-xterm
+bindsym $mod+Shift+Return exec xterm -class floating-xterm -geometry +598+358@c
 for_window [class="floating-xterm"] floating enable 
 
 # floating vim scratchpad 
