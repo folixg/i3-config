@@ -37,36 +37,27 @@ function player-status {
   fi
 } 
 
-i3status -c ~/.i3/i3status.conf | while :
-do
-  read line
-  if [ "$line" == '{"version":1}' ] || [ "$line" == "[" ] ; then
-    echo "$line" || exit 1
-  else   
-    # first check if spotify is running
-    RUNNING="spotify"
-    player-status
-    if [ "$STATUS" == "" ] ; then
-      # then check for rhythmbox
-      RUNNING="rhythmbox"
-      player-status
-      if [ "$STATUS" == "" ] ; then
-        echo "$line" || exit 1    
-        continue
-      fi
-    fi
-    if [ "$STATUS" == "Playing" ] || [ "$STATUS" == "Paused" ] ; then
-      if [ "$STATUS" == "Playing" ] ; then
-        ICON=""
-      else
-        ICON="" 
-      fi
-      METADATA=$(player-metadata)
-      ARTIST=$(echo "$METADATA" | grep --color=never "artist")
-      ARTIST=${ARTIST#*|}
-      TITLE=$(echo "$METADATA" | grep --color=never "title")
-      TITLE=${TITLE#*|}
-      echo ",[{\"name\":\"music\",\"full_text\":\"$ICON $ARTIST - $TITLE\"},${line#*[}" || exit 1
-    fi
+# first check if spotify is running
+RUNNING="spotify"
+player-status
+if [ "$STATUS" == "" ] ; then
+  # then check for rhythmbox
+  RUNNING="rhythmbox"
+  player-status
+  if [ "$STATUS" == "" ] ; then
+    echo "" || exit 1    
   fi
-done
+fi
+if [ "$STATUS" == "Playing" ] || [ "$STATUS" == "Paused" ] ; then
+  if [ "$STATUS" == "Playing" ] ; then
+    ICON=""
+  else
+    ICON="" 
+  fi
+  METADATA=$(player-metadata)
+  ARTIST=$(echo "$METADATA" | grep --color=never "artist")
+  ARTIST=${ARTIST#*|}
+  TITLE=$(echo "$METADATA" | grep --color=never "title")
+  TITLE=${TITLE#*|}
+  echo "{\"name\":\"music\",\"full_text\":\"$ICON $ARTIST - $TITLE\"}" || exit 1
+fi
