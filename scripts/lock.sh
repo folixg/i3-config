@@ -28,6 +28,22 @@ if [ "$spotify_status" != "" ] ; then
   fi
 fi
 
+# pause rhythmbox if it is playing
+#
+rhythmbox_paused=0
+rhythmbox_status=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.rhythmbox \
+  /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get \
+  string:org.mpris.MediaPlayer2.Player string:'PlaybackStatus' 2> /dev/null)
+if [ "$rhythmbox_status" != "" ] ; then
+  rhythmbox_status=${rhythmbox_status#*\"}
+  rhythmbox_status=${rhythmbox_status::-1}
+  if [ "$rhythmbox_status" == "Playing" ] ; then
+    dbus-send --print-reply --dest=org.mpris.MediaPlayer2.rhythmbox \
+    /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause
+    rhythmbox_paused=1
+  fi
+fi
+
 # pause dunst notifications
 killall -SIGUSR1 dunst
 
@@ -71,6 +87,10 @@ fi
 if [ $suspend -eq 0 ] ; then
   if [ $spotify_paused -eq 1 ] ; then
     dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify \
+    /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause
+  fi
+  if [ $rhythmbox_paused -eq 1 ] ; then
+    dbus-send --print-reply --dest=org.mpris.MediaPlayer2.rhythmbox \
     /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause
   fi
 fi
