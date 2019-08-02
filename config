@@ -14,7 +14,6 @@ set $bar-bg-color        #2b3e50
 
 # Variables to set fonts (used for i3 itself, i3bar and dmenu)
 set $text-font Source Code Pro
-set $icon-font Font Awesome
 set $font-size 11
 
 # Font for window titles. Will also be used by the bar unless a different font
@@ -25,10 +24,10 @@ font pango:$text-font $font-size
 floating_modifier $mod
 
 # lock
-bindsym $mod+Shift+x exec ~/.i3/scripts/lock.sh
+bindsym $mod+Shift+x exec xflock4
 
 # suspend
-bindsym $mod+Shift+y exec ~/.i3/scripts/lock.sh --suspend
+bindsym $mod+Shift+y exec xfce4-session-logout --suspend
 
 # start a terminal
 bindsym $mod+Return exec xterm
@@ -36,13 +35,8 @@ bindsym $mod+Return exec xterm
 # kill focused window
 bindsym $mod+Shift+q kill
 
-# start i3-dmenu-desktop
-bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu="dmenu -b -i -nb \
-'$bar-bg-color' -nf '$text-color' -sb '$urgent-bg-color' -fn '$text-font-$font-size'"
-
-# start dmenu_run
-bindsym $mod+Shift+d exec --no-startup-id dmenu_run -b -i -nb '$bar-bg-color' -nf \
-'$text-color' -sb '$urgent-bg-color' -fn '$text-font-$font-size'
+# open xfce app menu
+bindsym $mod+d exec --no-startup-id xfce4-appfinder
 
 # change focus
 bindsym $mod+h focus left
@@ -100,17 +94,21 @@ bindsym $mod+Shift+m move scratchpad
 # Show the first scratchpad window
 bindsym $mod+m scratchpad show
 
+# display configuration
+bindsym $mod+p exec --no-startup-id xfce4-display-settings --minimal
+bindsym XF86Display exec --no-startup-id xfce4-display-settings --minimal
+
 # workspace aliases
-set $workspace1 "1 "
-set $workspace2 "2 "
-set $workspace3 "3 "
-set $workspace4 "4 "
-set $workspace5 "5 "
-set $workspace6 "6 "
-set $workspace7 "7 "
-set $workspace8 "8 "
-set $workspace9 "9 "
-set $workspace10 "10 "
+set $workspace1 "1"
+set $workspace2 "2"
+set $workspace3 "3"
+set $workspace4 "4"
+set $workspace5 "5"
+set $workspace6 "6"
+set $workspace7 "7"
+set $workspace8 "8"
+set $workspace9 "9"
+set $workspace10 "10"
 
 # switch to workspace
 bindsym $mod+1 workspace $workspace1
@@ -137,20 +135,16 @@ bindsym $mod+Shift+9 move container to workspace $workspace9
 bindsym $mod+Shift+0 move container to workspace $workspace10
 
 # workspace default monitors
-workspace $workspace1 output DP-1-1
-workspace $workspace2 output DP-1-1
-workspace $workspace3 output DP-1-1
-workspace $workspace4 output DP-1-1
-workspace $workspace5 output DP-1-1
-workspace $workspace6 output LVDS1
-workspace $workspace7 output LVDS1
-workspace $workspace8 output LVDS1
-workspace $workspace9 output LVDS1
-workspace $workspace10 output LVDS1
-
-# enable/disable external monitor
-bindsym $mod+p exec xrandr --output DP-1-1 --auto --left-of LVDS1
-bindsym $mod+Shift+p exec xrandr --output DP-1-1 --off
+workspace $workspace1 output LVDS1
+workspace $workspace2 output LVDS1
+workspace $workspace3 output LVDS1
+workspace $workspace4 output LVDS1
+workspace $workspace5 output LVDS1
+workspace $workspace6 output DP-1-1
+workspace $workspace7 output DP-1-1
+workspace $workspace8 output DP-1-1
+workspace $workspace9 output DP-1-1
+workspace $workspace10 output DP-1-1
 
 # floating terminal
 bindsym $mod+Shift+Return exec xterm -class floating-xterm -geometry +598+358@c
@@ -162,6 +156,7 @@ exec --no-startup-id xterm -class 'i3-scratchpad' -e vim -c 'set ft=markdown' \
 -c 'set noswapfile' /tmp/scratchpad
 
 for_window [title="Unlock Database - KeePassXC"] floating enable
+for_window [title="Application Finder"] floating enable
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -170,7 +165,7 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 
 # exit menu
-bindsym $mod+Shift+e exec "~/.i3/scripts/exit_dmenu.sh"
+bindsym $mod+Shift+e exec xfce4-session-logout
 
 # temporarily ignore keyboard events
 mode "keyboard freeze" {
@@ -203,46 +198,6 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 
-# Start i3bar to display a workspace bar (plus the system information i3status
-# finds out, if available)
-bar {
-        status_command ~/.i3/scripts/my_status.sh
-        output primary
-        tray_output primary
-        separator_symbol "┊" 
-        strip_workspace_numbers yes
-        font pango:$text-font, $icon-font $font-size
-	colors {
-		background $bar-bg-color
-                statusline $text-color
-	    	separator  $text-color
-		#                  border         background         text
-		focused_workspace  $bar-bg-color  $bar-bg-color      $text-color
-		active_workspace   $bar-bg-color  $bar-bg-color      $inactive-text-color
-		inactive_workspace $bar-bg-color  $bar-bg-color      $inactive-text-color
-		urgent_workspace   $bar-bg-color  $urgent-bg-color   $text-color
-}
-}
-
-bar {
-        output HDMI3
-        tray_output HDMI3
-        status_command i3status -c ~/.i3/i3status.conf
-        separator_symbol "┊" 
-        strip_workspace_numbers yes
-        font pango:$text-font, $icon-font $font-size
-	colors {
-		background $bar-bg-color
-                statusline $text-color
-	    	separator  $text-color
-		#                  border         background         text
-		focused_workspace  $bar-bg-color  $bar-bg-color      $text-color
-		active_workspace   $bar-bg-color  $bar-bg-color      $inactive-text-color
-		inactive_workspace $bar-bg-color  $bar-bg-color      $inactive-text-color
-		urgent_workspace   $bar-bg-color  $urgent-bg-color   $text-color
-                }
-}
-
 # window colors
 #                       border              background         text                 indicator
 client.focused          $bg-color           $bg-color          $text-color          $indicator-color
@@ -266,13 +221,5 @@ bindsym --release Print exec --no-startup-id scrot -m '/tmp/%Y%m%d-%H%M%S_scrot.
 bindsym --release Shift+Print exec --no-startup-id scrot -s '/tmp/%Y%m%d-%H%M%S_scrot.png'
 bindsym --release Ctrl+Print exec --no-startup-id scrot -u '/tmp/%Y%m%d-%H%M%S_scrot.png'
 
-# Autostart
 # load ~/.Xresources
 exec_always --no-startup-id xrdb ~/.Xresources
-# wallpaper
-exec_always --no-startup-id ~/.fehbg
-# dunst for notifications
-exec --no-startup-id dunst -config ~/.i3/dunstrc
-# background tasks
-exec --no-startup-id nm-applet
-exec --no-startup-id xautolock -time 10 -detectsleep -locker ~/.i3/scripts/lock.sh
