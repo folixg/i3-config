@@ -4,13 +4,13 @@
 set $mod Mod1
 
 # color scheme
-set $bg-color 	         #243443
-set $inactive-bg-color   #243443
-set $text-color          #f8f8f2
-set $inactive-text-color #92928c
-set $urgent-bg-color     #5c98cd
-set $indicator-color     #e6db74
-set $bar-bg-color        #2b3e50
+set $bg-color 	         #44475A
+set $inactive-bg-color   #44475A
+set $text-color          #F8F8F2
+set $inactive-text-color #BFBFBF
+set $urgent-bg-color     #6272A4
+set $indicator-color     #6272A4
+set $bar-bg-color        #44475A
 
 # Variables to set fonts (used for i3 itself, i3bar and dmenu)
 set $text-font Source Code Pro
