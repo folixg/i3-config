@@ -3,15 +3,6 @@
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 set $mod Mod1
 
-# color scheme
-set $bg-color 	         #44475A
-set $inactive-bg-color   #44475A
-set $text-color          #F8F8F2
-set $inactive-text-color #BFBFBF
-set $urgent-bg-color     #6272A4
-set $indicator-color     #6272A4
-set $bar-bg-color        #44475A
-
 # Variables to set fonts (used for i3 itself, i3bar and dmenu)
 set $text-font Source Code Pro
 set $icon-font Font Awesome
@@ -38,11 +29,11 @@ bindsym $mod+Shift+q kill
 
 # start i3-dmenu-desktop
 bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu="dmenu -b -i -nb \
-'$bar-bg-color' -nf '$text-color' -sb '$urgent-bg-color' -fn '$text-font-$font-size'"
+'$bg-color' -nf '$text-color' -sb '$higlight-color' -fn '$text-font-$font-size'"
 
 # start dmenu_run
-bindsym $mod+Shift+d exec --no-startup-id dmenu_run -b -i -nb '$bar-bg-color' -nf \
-'$text-color' -sb '$urgent-bg-color' -fn '$text-font-$font-size'
+bindsym $mod+Shift+d exec --no-startup-id dmenu_run -b -i -nb '$bg-color' -nf \
+'$text-color' -sb '$higlight-color' -fn '$text-font-$font-size'
 
 # change focus
 bindsym $mod+h focus left
@@ -202,6 +193,16 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 
+# don't use titlebars
+default_border pixel 1
+hide_edge_borders smart
+
+# color scheme
+set $bg-color 	         #44475A
+set $text-color          #F8F8F2
+set $darker-text-color   #BFBFBF
+set $higlight-color      #6272A4
+
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
@@ -212,14 +213,14 @@ bar {
         strip_workspace_numbers yes
         font pango:$text-font, $icon-font $font-size
 	colors {
-		background $bar-bg-color
+		background $bg-color
                 statusline $text-color
 	    	separator  $text-color
-		#                  border         background         text
-		focused_workspace  $bar-bg-color  $bar-bg-color      $text-color
-		active_workspace   $bar-bg-color  $bar-bg-color      $inactive-text-color
-		inactive_workspace $bar-bg-color  $bar-bg-color      $inactive-text-color
-		urgent_workspace   $bar-bg-color  $urgent-bg-color   $text-color
+		#                  border     background      text 
+		focused_workspace  $bg-color  $bg-color       $text-color
+		active_workspace   $bg-color  $bg-color       $darker-text-color
+		inactive_workspace $bg-color  $bg-color       $darker-text-color
+		urgent_workspace   $bg-color  $higlight-color $text-color
 }
 }
 
@@ -231,23 +232,23 @@ bar {
         strip_workspace_numbers yes
         font pango:$text-font, $icon-font $font-size
 	colors {
-		background $bar-bg-color
+		background $bg-color
                 statusline $text-color
 	    	separator  $text-color
-		#                  border         background         text
-		focused_workspace  $bar-bg-color  $bar-bg-color      $text-color
-		active_workspace   $bar-bg-color  $bar-bg-color      $inactive-text-color
-		inactive_workspace $bar-bg-color  $bar-bg-color      $inactive-text-color
-		urgent_workspace   $bar-bg-color  $urgent-bg-color   $text-color
+		#                  border     background      text
+		focused_workspace  $bg-color  $bg-color       $text-color
+		active_workspace   $bg-color  $bg-color       $darker-text-color
+		inactive_workspace $bg-color  $bg-color       $darker-text-color
+		urgent_workspace   $bg-color  $higlight-color $text-color
                 }
 }
 
 # window colors
-#                       border              background         text                 indicator
-client.focused          $bg-color           $bg-color          $text-color          $indicator-color
-client.unfocused        $inactive-bg-color  $inactive-bg-color $inactive-text-color $indicator-color
-client.focused_inactive $inactive-bg-color  $inactive-bg-color $inactive-text-color $indicator-color
-client.urgent           $urgent-bg-color    $urgent-bg-color   $text-color          $indicator-color
+#                       border          background      text               indicator        child_border
+client.focused          $bg-color       $bg-color       $text-color        $higlight-color  $darker-text-color
+client.unfocused        $bg-color       $bg-color       $darker-text-color $higlight-color  $bg-color
+client.focused_inactive $bg-color       $bg-color       $darker-text-color $higlight-color  $bg-color
+client.urgent           $higlight-color $higlight-color $text-color        $higlight-color  $higlight-color
 
 # change volume or toggle mute
 bindsym XF86AudioRaiseVolume exec amixer -q -D pulse sset Master 5%+ && pkill -RTMIN+11 i3blocks
