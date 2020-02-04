@@ -142,16 +142,8 @@ workspace $workspace8 output HDMI3
 workspace $workspace9 output HDMI3
 workspace $workspace10 output HDMI3
 
-# floating terminal
-bindsym $mod+Shift+Return exec xterm -class floating-xterm -geometry +598+358@c
-for_window [class="floating-xterm"] floating enable 
-
-# floating vim scratchpad 
-for_window [class="i3-scratchpad"] border pixel 2, move window to scratchpad
-exec --no-startup-id xterm -class 'i3-scratchpad' -e vim -c 'set ft=markdown' \
--c 'set noswapfile' /tmp/scratchpad
-
 for_window [title="Unlock Database - KeePassXC"] floating enable
+for_window [title="VeraCrypt"] floating disable
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -251,15 +243,12 @@ client.focused_inactive $bg-color       $bg-color       $darker-text-color $higl
 client.urgent           $higlight-color $higlight-color $text-color        $higlight-color  $higlight-color
 
 # change volume or toggle mute
-bindsym XF86AudioRaiseVolume exec amixer -q -D pulse sset Master 5%+ && pkill -RTMIN+11 i3blocks
-bindsym XF86AudioLowerVolume exec amixer -q -D pulse sset Master 5%- && pkill -RTMIN+11 i3blocks
-bindsym XF86AudioMute exec amixer -q -D pulse sset Master toggle && pkill -RTMIN+11
+bindsym XF86AudioRaiseVolume exec amixer -q -D pulse sset Master 5%+
+bindsym XF86AudioLowerVolume exec amixer -q -D pulse sset Master 5%-
+bindsym XF86AudioMute exec amixer -q -D pulse sset Master toggle
 
 # Media player controls
-bindsym XF86AudioPlay exec dbus-send --print-reply \
-                              --dest=org.mpris.MediaPlayer2.spotify \
-                              /org/mpris/MediaPlayer2 \
-                              org.mpris.MediaPlayer2.Player.PlayPause
+bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
 
 # Screenshots
 bindsym --release Print exec --no-startup-id scrot -m '/tmp/%Y%m%d-%H%M%S_scrot.png'
